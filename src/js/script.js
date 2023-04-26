@@ -82,6 +82,7 @@ $(document).ready(function(){
     $('.overlay, #consultation, #order, #thanks').fadeOut('slow');
   });
 
+  // можно удалить
   // $('.button_mini').on('click', function(){
   //   $('.overlay, #order').fadeIn('slow');
   // });

@@ -28,6 +28,10 @@
     .container {
         max-width: 960px;
     }
+    .header {
+        justify-content: flex-start;
+        display: none;
+    }
 }
 
 @media (max-width: 1024px) {
