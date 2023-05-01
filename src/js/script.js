@@ -120,13 +120,13 @@ $(document).ready(function(){
       },
     });
   };
-  // validateForms('#consultation-form');
-  // validateForms('#consultation form');
-  // validateForms('#order form');
+  validateForms('#consultation-form');
+  validateForms('#consultation form');
+  validateForms('#order form');
 
 
-    $('#consultation-form').submit(function(e) {
-      // e.preventDefault()s
+    $('form').submit(function(e) {
+      e.preventDefault();
 
       if(!$(this).valid()){
         return;
@@ -137,11 +137,11 @@ $(document).ready(function(){
         url: '../php/mail.php',
         data: $(this).serialize()
       }).done(function(){
-        // $(this).find('input').val('');
-        // $('#consultation, #order').fadeOut();
-        // $('.overlay, #thanks').fadeIn(slow);
+        $(this).find('input').val('');
+        $('#consultation, #order').fadeOut();
+        $('.overlay, #thanks').fadeIn(slow);
 
-        // $('form').trigger('resert');
+        $('form').trigger('resert');
       });
       return false;
     });
