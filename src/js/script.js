@@ -120,13 +120,13 @@ $(document).ready(function(){
       },
     });
   };
-  validateForms('#consultation-form');
-    validateForms('#consultation form');
-    validateForms('#order form');
+  // validateForms('#consultation-form');
+  // validateForms('#consultation form');
+  // validateForms('#order form');
 
 
-    $('form').submit(function(e) {
-      e.preventDefault();
+    $('#consultation-form').submit(function(e) {
+      // e.preventDefault()s
 
       if(!$(this).valid()){
         return;
@@ -134,7 +134,7 @@ $(document).ready(function(){
 
       $.ajax({
         type: 'POST',
-        url: 'mailer/smart.php',
+        url: '../php/mail.php',
         data: $(this).serialize()
       }).done(function(){
         // $(this).find('input').val('');
