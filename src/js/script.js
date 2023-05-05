@@ -144,7 +144,7 @@ $(document).ready(function(){
         data: $(this).serialize()
       }).done(function(){
         // inp.value = "";    не очищается форма
-        $(this).find('input').val('');           
+        $(this).closest('form').find('input').val('');           
         $('#consultation, #order').fadeOut();
         $('.overlay, #thanks').fadeIn('slow');
 
