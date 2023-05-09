@@ -28,6 +28,19 @@
     .container {
         max-width: 960px;
     }
+    .header {
+        justify-content: space-around;
+    }
+    .advantages {
+        &__wrapper {
+            justify-content: space-around;
+        }
+    }
+    .title {
+        &_left {
+            font-size: 30px;
+        }
+    }
    
 }
 
