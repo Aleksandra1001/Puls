@@ -70,11 +70,6 @@ $(document).ready(function(){
       })
     }) ;
   };
-  
-  toggleSlide('.catalog-item__link');
-  toggleSlide('.catalog-item__back');
-
-
 
   // Modal
   $('[data-modal=consultation]').on('click', function(){
@@ -125,9 +120,7 @@ $(document).ready(function(){
       },
     });
   };
-  validateForms('#consultation-form');
-  validateForms('#consultation form');
-  validateForms('#order form');
+ 
 
   
 
@@ -169,5 +162,15 @@ $(document).ready(function(){
       return false;
   });
 
+  // Toggle slide
+  toggleSlide('.catalog-item__link');
+  toggleSlide('.catalog-item__back');
+
+  // Validate form
+  validateForms('#consultation-form');
+  validateForms('#consultation form');
+  validateForms('#order form');
+
+  // Wow inti
   new WOW().init();
 }); 
