@@ -1,68 +1,174 @@
-const gulp        = require('gulp');
-const browserSync = require('browser-sync');
-const sass        = require('gulp-sass')(require('sass'));
-const cleanCSS = require('gulp-clean-css');
-const autoprefixer = require('gulp-autoprefixer');
-const rename = require("gulp-rename");
-const imagemin = require('gulp-imagemin');
-const htmlmin = require('gulp-htmlmin');
+const { src, dest, watch, parallel } = require("gulp");
 
-gulp.task('server', function() {
+const gulp = require("gulp"),
+  sass = require("gulp-sass")(require("sass")),
+  concat = require("gulp-concat"),
+  uglify = require("gulp-uglify"),
+  imagemin = require("gulp-imagemin"),
+  pngquant = require("imagemin-pngquant"),
+  recompress = require("imagemin-jpeg-recompress"),
+  del = require("del"),
+  browserSync = require("browser-sync").create(),
+  autoprefixer = require("gulp-autoprefixer"),
+  plumber = require("gulp-plumber"),
+  notify = require("gulp-notify"),
+  rigger = require("gulp-rigger"),
+  cleanCSS = require("gulp-clean-css");
 
-    browserSync({
-        server: {
-            baseDir: "dist"
-        }
-    });
+var path = {
+  dist: {
+    // Путь для файлов при сборке
+    html: "dist/",
+    js: "dist/js/",
+    css: "dist/css/",
+    img: "dist/img/",
+    fonts: "dist/fonts/",
+    php: "dist/php/",
+  },
+  src: {
+    // Пути исходников
+    html: "src/*.html",
+    js: "src/js/**/*.js",
+    scss: "src/scss/*.scss",
+    img: "src/img/**/**/*.{jpg,png,svg,gif,ico}",
+    fonts: "src/fonts/**/*.*",
+    php: "src/php/**/*.*",
+  },
+  watch: {
+    // Пути для наблюдения за изменениями файлов
+    html: "src/**/*.html",
+    js: "src/js/**/*.js",
+    scss: "src/scss/**/*.scss",
+    img: "src/img/**/**/*.{jpg,png,svg,gif,ico}",
+    fonts: "src/fonts/**/*.*",
+    php: "src/php/**/*.*",
+  },
+  clean: "./dist",
+};
 
-    gulp.watch("src/*.html").on('change', browserSync.reload);
-});
+function browsersync() {
+  browserSync.init({
+    server: {
+      baseDir: "dist/",
+    },
+  });
+}
 
-gulp.task('styles', function() {
-    return gulp.src("src/scss/**/*.+(scss|sass)")
-        .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-        .pipe(rename({suffix: '.min', prefix: ''}))
-        .pipe(autoprefixer())
-        .pipe(cleanCSS({compatibility: 'ie8'}))
-        .pipe(gulp.dest("dist/css"))
-        .pipe(browserSync.stream());
-});
+/* ========= "HTML" ========== */
+function html() {
+  return src(path.src.html)
+    .pipe(
+      plumber({ errorHandler: notify.onError("Error: <%= error.message %>") })
+    )
+    .pipe(rigger())
+    .pipe(dest(path.dist.html))
+    .pipe(browserSync.stream());
+}
 
-gulp.task('watch', function() {
-    gulp.watch("src/scss/**/*.+(scss|sass|css)", ['styles']);
-    gulp.watch("src/*.html").on('change', gulp.parallel('html'));
-});
+/* ========= "JS" ========== */
+function scripts() {
+  return src(path.src.js)
+    .pipe(
+      plumber({ errorHandler: notify.onError("Error: <%= error.message %>") })
+    )
+    .pipe(concat("main.min.js"))
+    .pipe(uglify())
+    .pipe(dest(path.dist.js))
+    .pipe(browserSync.stream());
+}
 
-gulp.task('html', function() {
-    return gulp.src("src/*.html")
-    .pipe(htmlmin({ collapseWhitespace: true }))
-    .pipe(gulp.dest("dist/"));
-});
+/* ========= "SCSS" ========== */
+function styles() {
+  return src(path.src.scss)
+    .pipe(
+      plumber({ errorHandler: notify.onError("Error: <%= error.message %>") })
+    )
+    .pipe(sass({ outputStyle: "expanded" }))
+    .pipe(
+      autoprefixer({
+        overrideBrowserslist: ["last 10 version", ">1%", "ie 8", "ie 7"],
+      })
+    )
+    .pipe(cleanCSS({ compatibility: "ie8" }))
+    .pipe(concat("style.min.css"))
+    .pipe(dest(path.dist.css))
+    .pipe(browserSync.stream());
+}
 
-gulp.task('scripts', function() {
-    return gulp.src("src/js/**/*.js")
-    .pipe(gulp.dest("dist/js"));
-});
+/* ========== "IMG" ========== */
+function images() {
+  return src(path.src.img)
+    .pipe(
+      plumber({ errorHandler: notify.onError("Error: <%= error.message %>") })
+    )
+    .pipe(
+      imagemin([
+        recompress({
+          progressive: true,
+          min: 70,
+          max: 90,
+        }),
+        pngquant({
+          speed: 5,
+          quality: [0.9, 1],
+        }),
+        imagemin.svgo({
+          plugins: [{ removeViewBox: false }],
+        }),
+        imagemin.gifsicle(),
+        imagemin.optipng(),
+      ])
+    )
+    .pipe(dest(path.dist.img))
+    .pipe(browserSync.stream());
+}
 
-gulp.task('fonts', function() {
-    return gulp.src("src/fonts/**/*")
-    .pipe(gulp.dest("dist/fonts"));
-});
+/* ========== "FONTS" ========== */
+function fonts() {
+  return src(path.src.fonts)
+    .pipe(dest(path.dist.fonts))
+    .pipe(browserSync.stream());
+}
 
-gulp.task('icons', function() {
-    return gulp.src("src/icons/**/*")
-    .pipe(gulp.dest("dist/icons"));
-});
+/* ========== "PHP" ========== */
+function php() {
+  return src(path.src.php).pipe(dest(path.dist.php)).pipe(browserSync.stream());
+}
 
-gulp.task('mailer', function() {
-    return gulp.src("src/mailer/**/*")
-    .pipe(gulp.dest("dist/mailer"));
-});
+/* ========= "CLEAN" ========= */
+function clean() {
+  return del.sync(path.clean);
+}
 
-gulp.task('images', function() {
-    return gulp.src("src/img/**/*")
-    .pipe(imagemin())
-    .pipe(gulp.dest("dist/img"));
-});
+/* ========= "WATCH" ========= */
+function watching() {
+  watch([path.watch.html], html);
+  watch([path.watch.scss], styles);
+  watch([path.watch.js], scripts);
+  watch([path.watch.img], images);
+  watch([path.watch.fonts], fonts);
+  watch([path.watch.php], php);
+}
 
-gulp.task('default', ['watch', 'server', 'styles', 'scripts','fonts', 'icons', 'mailer', 'html', 'images']);
+exports.clean = clean;
+exports.html = html;
+exports.styles = styles;
+exports.scripts = scripts;
+exports.images = images;
+exports.fonts = fonts;
+exports.php = php;
+exports.watching = watching;
+exports.browsersync = browsersync;
+
+exports.build = parallel(html, styles, scripts, images, fonts, php);
+exports.default = parallel(
+  clean,
+  html,
+  styles,
+  scripts,
+  images,
+  fonts,
+  php,
+  browsersync,
+  watching
+);

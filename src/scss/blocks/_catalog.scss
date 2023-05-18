@@ -40,17 +40,18 @@
         flex-wrap: wrap;
         margin-top: 64px;
         &_active {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 20px 20px;
         }
     }
     .catalog-item {
-        width: 303px;
+        width: 100%;
         min-height: 442px;
         border: 2px solid #E8E8E8;
         padding: 20px 20px;
         overflow: hidden;
-        margin-bottom: 20px;
-        margin-right: 13px;
+
         &__img {
             display: block;
             margin: 0 auto;
