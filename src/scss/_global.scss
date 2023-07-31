@@ -72,7 +72,7 @@ nav {
     color: $text_color;
     font-size: 36px;
     line-height: 48px;
-    letter-spacing: -2px;    /* это нужно писать? */
+    letter-spacing: -2px;
     &-h1 {
         font-size: 56px;
         line-height: 64px;
@@ -87,6 +87,7 @@ nav {
     &-h3 {
         font-size: 36px;
         line-height: 48px;
+        letter-spacing: -2px;
     }
     &-h4 {
         font-size: 28px;
@@ -96,19 +97,44 @@ nav {
     &-h5 {
         font-size: 24px;
         line-height: 32px;
+        letter-spacing: 0;
+    }
+    &-h6 {
+        font-size: 18px;
+        line-height: 32px;
+        letter-spacing: 0;
     }
 }
 .text {
     font-family: $inter_regular;
     font-size: 16px;
     line-height: 28px;
+    color: $text_color;
     &_light {
         color: $accent_color;
+    }
+    &_medium {
+        font-family: $inter_semi_Bold;
+        // font-size: 16px;
+        line-height: 20px;
         letter-spacing: 3px;
+        text-transform: uppercase;
     }
     &_small {
         font-family: $inter_medium;
         font-size: 14px;
         line-height: 20px;
+    }
+}
+.shape {
+    width: 1060px;
+    height: 23px;
+    background: $other_color;
+    margin-left: 220px;
+    span {
+        display: block;
+        height: 100%;
+        width: 780px;
+        background: $main_color;
     }
 }
